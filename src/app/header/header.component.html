@@ -1,0 +1,6 @@
+<div class="toolbar" role="banner">
+    <div class="title">{{title}}</div>
+    <div class="spacer"></div>
+    
+    <button class="tab" *ngFor="let tab of tabs | keyvalue" [routerLink]="tab.value">{{tab.key}}</button>
+  </div>
