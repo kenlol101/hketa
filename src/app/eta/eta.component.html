@@ -1,5 +1,23 @@
-<!-- <p *ngFor="let eta of getETA('A60AE774B09A5E44','40','1')">{{eta.type}}</p> -->
-<p>{{etaReponse?.type}}</p>
-<p>{{etaReponse?.version}}</p>
-<p>{{etaReponse?.generated_timestamp}}</p>
+<form (ngSubmit)="onSubmit()" #etaForm="ngForm">
+    {{debug}}
+    <div class="form-control">
+        <label for="route">Route</label>
+        <input type="text" class="form-control" id="route"
+       required
+       [(ngModel)]="model.route" name="route">
+    </div>
+    <button type="submit" class="btn btn-success" [disabled]="!etaForm.form.valid">Submit</button>
+</form>
+<table *ngIf="etaReponse != undefined">
+    <tr>
+        <th>Route</th>
+        <th>Dest</th>
+        <th>ETA</th>
+    </tr>
+    <tr *ngFor="let data of etaReponse.data">
+        <td>{{data.route}}</td>
+        <td>{{data.dest_en}}</td>
+        <td>{{data.eta}}</td>
+    </tr>
 
+</table>
