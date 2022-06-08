@@ -1,1 +1,19 @@
-<app-eta *ngFor="let eta of containerList"></app-eta>
+<div class="form-control" *ngFor="let c of containerList">
+    <table class="table table-striped">
+        <tr>
+            <th style="width:10%">Route</th>
+            <th style="width:30%">Dest</th>
+            <th style="width:30%">ETA</th>
+            <th style="width:30%">Remarks</th>
+        </tr>
+        <tr *ngFor="let data of c.data">
+            <ng-container>
+                <td>{{data.route}}</td>
+                <td>{{data.dest_en}}</td>
+                <td>{{data.eta | date:'mediumTime'}}</td>
+                <td>{{data.rmk_en}}</td>
+            </ng-container> 
+        </tr>
+    </table>
+    <button class="btn-primay" (click)="onClick(c)">X</button>
+</div>

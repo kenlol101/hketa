@@ -4,7 +4,6 @@ export class ETA {
     constructor(
         public company: string = '', 
         public route: RouteResponseDetail | undefined = undefined, 
-        public stop: string = '', 
-        public serviceType: string = ''
+        public stop: string = ''        
     ) { }
 }

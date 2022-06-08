@@ -9,7 +9,7 @@ import { FooterComponent } from './footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { EtaContainerComponent } from './eta-container/eta-container.component';
-import { NgAutoCompleteModule } from 'ng-auto-complete';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ import { NgAutoCompleteModule } from 'ng-auto-complete';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgAutoCompleteModule
+    AutocompleteLibModule
   ],
   providers: [],
   bootstrap: [AppComponent]

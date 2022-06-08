@@ -17,4 +17,5 @@ export interface RouteResponseDetail {
     dest_tc: string;
     dest_sc: string;
     data_timestamp: any;
+    select_label: string;
 }

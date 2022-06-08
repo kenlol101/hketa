@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EtaResponse } from '../data/eta.response';
 import { Observable, Observer } from 'rxjs';
 import { ETA } from './eta'; 
 import { UrlConfig } from './url.config';
 import { RouteResponse, RouteResponseDetail } from '../data/route.reponse';
-import { SelectedAutocompleteItem } from 'ng-auto-complete';
 import { RouteStopResponse, RouteStopResponseDetail } from '../data/route.stop.response';
-import { StopList, StopResponse, StopResponseDetail } from '../data/stop.response';
+import { StopResponse } from '../data/stop.response';
+import { EtaContainerComponent } from '../eta-container/eta-container.component';
 
 @Component({
   selector: 'app-eta',
@@ -51,7 +51,10 @@ export class EtaComponent implements OnInit {
       url = `${this.urlConfig?.nwfs.routeUrl}`;
     }
     console.log("url: " + url);
-    this.httpClient.get<RouteResponse>(url).subscribe((data:RouteResponse) => this.routeList = {...data});
+    this.httpClient.get<RouteResponse>(url).subscribe((data:RouteResponse) => {
+      this.routeList = {...data};
+      this.routeList.data.forEach(r => r.select_label = r.route + ' - ' + r.dest_en);
+    });
   }
 //#endregion
 
@@ -100,7 +103,7 @@ export class EtaComponent implements OnInit {
 //#endregion
 
 //#region ETA
-  etaReponse : EtaResponse | undefined;
+  // etaReponse : EtaResponse | undefined;
 
   private getETAObservable(stopId: string, route: string, serviceType: string): Observable<EtaResponse> {
     return this.httpClient.get<EtaResponse>(`${this.urlConfig?.kmb.etaUrl}${stopId}/${route}/${serviceType}`);
@@ -108,7 +111,11 @@ export class EtaComponent implements OnInit {
   getETAResponse(stopId: string, route: string, serviceType: string) {
     this.getETAObservable(stopId, route, serviceType).subscribe(
       (data: EtaResponse) => {
-        this.etaReponse = {...data};
+        // this.etaReponse = {...data};
+        data.data = data.data.filter(d => d.route == this.model.route?.route 
+          && d.service_type == this.model.route.service_type
+          && d.dir == this.model.route.bound);
+        EtaContainerComponent.addContainer({...data});       
       });
   }
 //#endregion
@@ -117,14 +124,21 @@ export class EtaComponent implements OnInit {
     console.log("Submitted: " + JSON.stringify(this.model.route));
     if (this.model.route != undefined)
       this.getETAResponse(this.model.stop, this.model.route.route, this.model.route.service_type);
-  }  
+  }
 
   get debug() {
     return JSON.stringify(this.model);
   }  
 
-  // TODO
-  // onSelected(item: SelectedAutocompleteItem) {
-  //   console.log(item.item.original);
-  // }
+//#region AutoComplete
+  keyword = 'select_label';
+  selectEvent(item: any) {
+    // do something with selected item
+    console.log('selectEvent');
+    this.model.route = item;
+    this.onRouteSelected();
+  }
+//#endregion
+
+
 }

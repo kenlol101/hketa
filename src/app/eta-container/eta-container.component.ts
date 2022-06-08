@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ETA } from '../eta/eta';
+import { EtaResponse } from '../data/eta.response';
 
 @Component({
   selector: 'app-eta-container',
@@ -8,15 +8,22 @@ import { ETA } from '../eta/eta';
 })
 export class EtaContainerComponent implements OnInit {
 
-  containerList: Array<ETA> = [];
+  static containerList: Array<EtaResponse> = [];
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  addContainer(): void {
-    this.containerList.push(new ETA());
+  static addContainer(item: EtaResponse): void {
+    EtaContainerComponent.containerList.push(item);
   }
 
+  get containerList(): Array<EtaResponse> {
+    return EtaContainerComponent.containerList;
+  }
+
+  onClick(item: EtaResponse): void {
+    EtaContainerComponent.containerList = EtaContainerComponent.containerList.filter(e => e !== item);
+  }
 }

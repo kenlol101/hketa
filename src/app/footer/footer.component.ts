@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AppComponent } from '../app.component';
+import { EtaContainerComponent } from '../eta-container/eta-container.component';
 import { EtaComponent } from '../eta/eta.component';
 
 @Component({
@@ -13,8 +15,8 @@ export class FooterComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onClick(): void {
-
-  }
+  // onClick(): void {
+  //   EtaContainerComponent.addContainer();
+  // }
 
 }
