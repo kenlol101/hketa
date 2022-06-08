@@ -1,0 +1,18 @@
+div {
+    --div-min-height: 50px;
+    --button-height: 40px;
+    --button-margin: 5px;
+
+    min-height: var(--div-min-height);
+    position: relative;
+}
+
+button {
+    height: var(--button-height);
+    width: 40px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: var(--button-margin);
+    border-radius: 30px;
+}

@@ -8,19 +8,23 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { EtaContainerComponent } from './eta-container/eta-container.component';
+import { NgAutoCompleteModule } from 'ng-auto-complete';
 
 @NgModule({
   declarations: [
     AppComponent,
     EtaComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    EtaContainerComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgAutoCompleteModule
   ],
   providers: [],
   bootstrap: [AppComponent]

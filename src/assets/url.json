@@ -1,0 +1,11 @@
+{
+    "kmb": {
+        "routeUrl": "https://data.etabus.gov.hk/v1/transport/kmb/route/",
+        "routeStopUrl": "https://data.etabus.gov.hk/v1/transport/kmb/route-stop/",
+        "etaUrl": "https://data.etabus.gov.hk/v1/transport/kmb/eta/",
+        "stopUrl" : "https://data.etabus.gov.hk/v1/transport/kmb/stop/"
+    },
+    "nfws": {
+
+    }   
+}

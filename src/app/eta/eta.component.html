@@ -1,23 +1,55 @@
 <form (ngSubmit)="onSubmit()" #etaForm="ngForm">
     {{debug}}
-    <div class="form-control">
-        <label for="route">Route</label>
-        <input type="text" class="form-control" id="route"
-       required
-       [(ngModel)]="model.route" name="route">
+    <div class="form-group">
+        <label for="company">Company</label>
+        <select class="form-control" id="company"
+        required #company
+        [(ngModel)]="model.company" name="company"
+        (change)='onCompanySelected(company.value)'>
+            <option>KMB</option>
+            <!-- TODO to be implement -->
+            <!-- <option>NFWS</option> -->
+        </select>
     </div>
+    <div class="form-group">
+        <label for="route">Route</label>
+        <select class="form-control" id="route"
+        required #route [disabled]="!routeList"
+        [(ngModel)]="model.route" name="route"
+        (change)='onRouteSelected()'>
+            <ng-container *ngIf="routeList"> 
+                <option *ngFor="let r of routeList.data" [ngValue]="r">{{r.route}} - {{r.dest_en}}</option>
+            </ng-container>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="stop">Stop</label>
+        <select class="form-control" id="stop"
+        required #stop [disabled]="stopList.length == 0"
+        [(ngModel)]="model.stop" name="stop">
+            <option *ngFor="let s of stopList" [value]="s.data.stop">{{s.data.name_en}}</option>
+        </select>
+    </div>
+    <input type="text" class="form-control" id="serviceType"
+        hidden
+        [(ngModel)]="model.serviceType" name="serviceType">
+
     <button type="submit" class="btn btn-success" [disabled]="!etaForm.form.valid">Submit</button>
 </form>
-<table *ngIf="etaReponse != undefined">
+
+<table *ngIf="etaReponse">
     <tr>
         <th>Route</th>
         <th>Dest</th>
         <th>ETA</th>
     </tr>
     <tr *ngFor="let data of etaReponse.data">
-        <td>{{data.route}}</td>
-        <td>{{data.dest_en}}</td>
-        <td>{{data.eta}}</td>
+        <ng-container *ngIf="model.route && 
+            (data.route == model.route.route && data.service_type == model.route.service_type && data.dir == model.route.bound)">
+            <td>{{data.route}}</td>
+            <td>{{data.dest_en}}</td>
+            <td>{{data.eta | date:'mediumTime'}}</td>
+        </ng-container> 
     </tr>
 
 </table>
