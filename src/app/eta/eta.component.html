@@ -10,19 +10,7 @@
             <!-- TODO to be implement -->
             <!-- <option>NFWS</option> -->
         </select>
-    </div>
-    <!-- <div class="form-group">
-        <label for="route">Route</label>
-        <select class="form-control" id="route"
-        required #route [disabled]="!routeList"
-        [(ngModel)]="model.route" name="route"
-        (change)='onRouteSelected()'>
-            <ng-container *ngIf="routeList"> 
-                <option *ngFor="let r of routeList.data" [ngValue]="r">{{r.route}} - {{r.dest_en}}</option>
-            </ng-container>
-        </select>
-    </div> -->
-    <div class="form-group">
+        <br>
         <label for="route">Route</label>
         <ng-autocomplete [disabled]="!routeList" #auto
         [data]="routeList ? routeList.data : []"
@@ -40,8 +28,7 @@
         <ng-template #notFoundTemplate let-notFound>
         <div [innerHTML]="notFound"></div>
         </ng-template>
-    </div>
-    <div class="form-group">
+        <br>
         <label for="stop">Stop</label>
         <select class="form-control" id="stop"
         required #stop [disabled]="stopList.length == 0"

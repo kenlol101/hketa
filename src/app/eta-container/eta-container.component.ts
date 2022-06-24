@@ -1,29 +1,60 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AppComponent } from '../app.component';
 import { EtaResponse } from '../data/eta.response';
+import { EtaComponent } from '../eta/eta.component';
+import { ETAContainer as EtaContainer } from './eta-container';
 
 @Component({
   selector: 'app-eta-container',
   templateUrl: './eta-container.component.html',
   styleUrls: ['./eta-container.component.css']
 })
-export class EtaContainerComponent implements OnInit {
+export class EtaContainerComponent {
 
-  static containerList: Array<EtaResponse> = [];
+  static containerList: Array<EtaContainer> = [];
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  ngOnInit(): void {
+  addContainer(item: EtaContainer): void {    
+    EtaContainerComponent.containerList.push(item);    
+    this.refreshContainer(item);
+    setInterval(() => {
+      this.refreshContainer(item);
+    }, 30000);
   }
 
-  static addContainer(item: EtaResponse): void {
-    EtaContainerComponent.containerList.push(item);
-  }
-
-  get containerList(): Array<EtaResponse> {
+  get containerList(): Array<EtaContainer> {
     return EtaContainerComponent.containerList;
   }
 
-  onClick(item: EtaResponse): void {
+  refreshContainer(item: EtaContainer) {
+    this.getETAResponse(item, (data: EtaResponse) => {
+      item.response = {...data};            
+    });
+  }
+
+  onClick(item: EtaContainer): void {
     EtaContainerComponent.containerList = EtaContainerComponent.containerList.filter(e => e !== item);
   }
+
+//#region ETA
+private getETAObservable(stopId: string, route: string, serviceType: string): Observable<EtaResponse> {
+  return this.httpClient.get<EtaResponse>(`${AppComponent.config?.kmb.etaUrl}${stopId}/${route}/${serviceType}`);
+}
+
+getETAResponse(item: EtaContainer, callback: (data: EtaResponse) => void) {
+  this.getETAObservable(item.stopId, item.route, item.serviceType).subscribe(
+    (data: EtaResponse) => {
+      // this.etaReponse = {...data};
+      data.data = data.data.filter(d => d.route == item.route
+        && d.service_type == item.serviceType
+        && d.dir == item.bound);
+      // EtaContainerComponent.addContainer({...data});
+      callback(data);       
+    });
+}
+//#endregion
+
 }

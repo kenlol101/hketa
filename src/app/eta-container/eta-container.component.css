@@ -10,3 +10,8 @@ button {
     width: 40px;
     height: 40px;
 }
+
+table tr th{
+    background-color: #E60012;
+    color: white;
+}

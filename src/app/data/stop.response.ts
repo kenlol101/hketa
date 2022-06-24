@@ -3,6 +3,8 @@ export interface StopResponse{
     version: string;
     generated_timestamp: any;
     data: StopResponseDetail;
+
+    seq: number;
 }
 
 export interface StopResponseDetail {
@@ -12,7 +14,7 @@ export interface StopResponseDetail {
     name_sc: string;
     lat: number;
     long: number;
-    data_timestamp: any;
+    data_timestamp: any;    
 }
 
 export interface StopList {

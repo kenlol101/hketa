@@ -8,6 +8,8 @@ import { RouteResponse, RouteResponseDetail } from '../data/route.reponse';
 import { RouteStopResponse, RouteStopResponseDetail } from '../data/route.stop.response';
 import { StopResponse } from '../data/stop.response';
 import { EtaContainerComponent } from '../eta-container/eta-container.component';
+import { AppComponent } from '../app.component';
+import { ETAContainer } from '../eta-container/eta-container';
 
 @Component({
   selector: 'app-eta',
@@ -15,9 +17,7 @@ import { EtaContainerComponent } from '../eta-container/eta-container.component'
   styleUrls: ['./eta.component.css']
 })
 export class EtaComponent implements OnInit {
-
-  urlConfig: UrlConfig | undefined;
-  
+ 
   routeList: RouteResponse | undefined;
   routeStopList: RouteStopResponse | undefined;
   stopList: Array<StopResponse> = [];
@@ -30,7 +30,7 @@ export class EtaComponent implements OnInit {
     this.getConfigUrl();
   }
   getConfigUrl() {
-    this.httpClient.get<UrlConfig>("assets/url.json").subscribe((data: UrlConfig) => this.urlConfig = {...data});
+    this.httpClient.get<UrlConfig>("assets/url.json").subscribe((data: UrlConfig) => AppComponent.urlConfig = {...data});
   }
 //#endregion
 
@@ -45,15 +45,15 @@ export class EtaComponent implements OnInit {
     console.log("getRouteList company:" + company);
     let url : string = '';
     if ("KMB" == company) {
-      url = `${this.urlConfig?.kmb.routeUrl}`;
+      url = `${AppComponent.urlConfig?.kmb.routeUrl}`;
     }
     else if ("NWFS" == company) {
-      url = `${this.urlConfig?.nwfs.routeUrl}`;
+      url = `${AppComponent.urlConfig?.nwfs.routeUrl}`;
     }
     console.log("url: " + url);
     this.httpClient.get<RouteResponse>(url).subscribe((data:RouteResponse) => {
       this.routeList = {...data};
-      this.routeList.data.forEach(r => r.select_label = r.route + ' - ' + r.dest_en);
+      this.routeList.data.map(r => r.select_label = r.route + ' - ' + r.dest_en);
     });
   }
 //#endregion
@@ -79,51 +79,50 @@ export class EtaComponent implements OnInit {
 
   getStopList(route: string, bound: string, service_type: string) {
     console.log("getStopList route:" + route + ",bound: " + bound + ",service_type: " + service_type);
-    let url : string = `${this.urlConfig?.kmb.routeStopUrl}${route}/${bound}/${service_type}`;
+    let url : string = `${AppComponent.urlConfig?.kmb.routeStopUrl}${route}/${bound}/${service_type}`;
     
     console.log("url: " + url);
 
-    
     let routeStopObserver: Observer<RouteStopResponse> = {
       next: (data: RouteStopResponse) => this.routeStopList = {...data},
       error: (error: any) => {},
       complete: () => {
+
         if (this.routeStopList){
+          this.routeStopList.data.sort((d1, d2) => d1.seq - d2.seq);
+
           for (var i = 0; i < this.routeStopList.data.length; i++) {
             var d : RouteStopResponseDetail = this.routeStopList.data[i];
-            let stopUrl = `${this.urlConfig?.kmb.stopUrl}${d.stop}`;
-            this.httpClient.get<StopResponse>(stopUrl).subscribe((data: StopResponse) => this.stopList?.push({...data}));
+            let stopUrl = `${AppComponent.urlConfig?.kmb.stopUrl}${d.stop}`;
+            // this.httpClient.get<StopResponse>(stopUrl).subscribe((data: StopResponse) => this.stopList?.push({...data}));
+
+            this.httpClient.get<StopResponse>(stopUrl).subscribe(
+              (data: StopResponse) => {
+                let tempData = {...data};
+                tempData.seq = d.seq;
+                this.stopList.push(tempData);                
+              },
+              (error: any)=> {},
+              ()=> {this.stopList.sort((s1, s2) => s1.seq - s2.seq)});                     
           }
         }        
       }
     };
 
-    this.httpClient.get<RouteStopResponse>(url).subscribe(routeStopObserver);
-  }
-//#endregion
-
-//#region ETA
-  // etaReponse : EtaResponse | undefined;
-
-  private getETAObservable(stopId: string, route: string, serviceType: string): Observable<EtaResponse> {
-    return this.httpClient.get<EtaResponse>(`${this.urlConfig?.kmb.etaUrl}${stopId}/${route}/${serviceType}`);
-  }
-  getETAResponse(stopId: string, route: string, serviceType: string) {
-    this.getETAObservable(stopId, route, serviceType).subscribe(
-      (data: EtaResponse) => {
-        // this.etaReponse = {...data};
-        data.data = data.data.filter(d => d.route == this.model.route?.route 
-          && d.service_type == this.model.route.service_type
-          && d.dir == this.model.route.bound);
-        EtaContainerComponent.addContainer({...data});       
-      });
+    this.httpClient.get<RouteStopResponse>(url).subscribe(routeStopObserver);    
   }
 //#endregion
 
   onSubmit() {
     console.log("Submitted: " + JSON.stringify(this.model.route));
-    if (this.model.route != undefined)
-      this.getETAResponse(this.model.stop, this.model.route.route, this.model.route.service_type);
+    if (this.model.route != undefined){
+      new EtaContainerComponent(this.httpClient).addContainer(
+        { stopId: this.model.stop, 
+          route: this.model.route.route,
+          serviceType: this.model.route.service_type,
+          bound: this.model.route.bound} as ETAContainer
+      );
+    }
   }
 
   get debug() {
@@ -133,8 +132,6 @@ export class EtaComponent implements OnInit {
 //#region AutoComplete
   keyword = 'select_label';
   selectEvent(item: any) {
-    // do something with selected item
-    console.log('selectEvent');
     this.model.route = item;
     this.onRouteSelected();
   }
