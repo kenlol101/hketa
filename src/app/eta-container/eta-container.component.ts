@@ -26,6 +26,9 @@ export class EtaContainerComponent {
   }
 
   get containerList(): Array<EtaContainer> {
+    EtaContainerComponent.containerList.forEach(element => {
+      element.response.data.sort((d1, d2) => d1.seq - d2.seq)
+    });
     return EtaContainerComponent.containerList;
   }
 

@@ -96,14 +96,16 @@ export class EtaComponent implements OnInit {
             let stopUrl = `${AppComponent.urlConfig?.kmb.stopUrl}${d.stop}`;
             // this.httpClient.get<StopResponse>(stopUrl).subscribe((data: StopResponse) => this.stopList?.push({...data}));
 
-            this.httpClient.get<StopResponse>(stopUrl).subscribe(
+            this.httpClient.get<StopResponse>(stopUrl)
+            .subscribe(
               (data: StopResponse) => {
-                let tempData = {...data};
-                tempData.seq = d.seq;
-                this.stopList.push(tempData);                
-              },
-              (error: any)=> {},
-              ()=> {this.stopList.sort((s1, s2) => s1.seq - s2.seq)});                     
+                if (this.routeStopList){
+                  var stop = this.routeStopList.data.find(d => d.stop == data.data.stop);
+                  if (stop){
+                    stop.stopName = data.data.name_en
+                  }                  
+                }                  
+              });                     
           }
         }        
       }

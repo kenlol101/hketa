@@ -31,9 +31,9 @@
         <br>
         <label for="stop">Stop</label>
         <select class="form-control" id="stop"
-        required #stop [disabled]="stopList.length == 0"
+        required #stop [disabled]="routeStopList != null && routeStopList.data != null && routeStopList.data.length == 0"
         [(ngModel)]="model.stop" name="stop">
-            <option *ngFor="let s of stopList" [value]="s.data.stop">{{s.data.name_en}}</option>
+            <option *ngFor="let s of routeStopList?.data" [value]="s.stop">{{s.seq}} - {{s.stopName}}</option>
         </select>      
     </div>
     <br>

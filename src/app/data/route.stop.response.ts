@@ -1,3 +1,5 @@
+import { StopResponse } from "./stop.response";
+
 export interface RouteStopResponse {
     type: string;
     version: string;
@@ -13,4 +15,6 @@ export interface RouteStopResponseDetail {
     seq: number;
     stop: string;
     data_timestamp: any;
+
+    stopName: string;
 }
