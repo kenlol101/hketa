@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EtaResponse } from '../data/eta.response';
-import { Observable, Observer } from 'rxjs';
+import { filter, Observable, Observer, startWith, map } from 'rxjs';
 import { ETA } from './eta'; 
 import { UrlConfig } from './url.config';
 import { RouteResponse, RouteResponseDetail } from '../data/route.reponse';
@@ -10,6 +10,7 @@ import { StopResponse } from '../data/stop.response';
 import { EtaContainerComponent } from '../eta-container/eta-container.component';
 import { AppComponent } from '../app.component';
 import { ETAContainer } from '../eta-container/eta-container';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-eta',
@@ -21,14 +22,34 @@ export class EtaComponent implements OnInit {
   routeList: RouteResponse | undefined;
   routeStopList: RouteStopResponse | undefined;
   stopList: Array<StopResponse> = [];
-
+  
+  matCtrl: FormControl;
+  filterRouteList: Observable<RouteResponseDetail[]> = new Observable();
+  
   model: ETA = new ETA();
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) { this.matCtrl = new FormControl(); }
 
 //#region Init
   ngOnInit(): void {
     this.getConfigUrl();
+    this.filterRouteList = this.matCtrl.valueChanges
+    .pipe(
+      startWith(''), 
+      map(val => this.filterRoute(val)) 
+    )
   }
+  filterRoute(val: any) : RouteResponseDetail[] {
+    if (typeof(val) === "string") {
+      return this.routeList 
+        ? this.routeList.data.filter(
+          data => data.dest_en.toLowerCase().indexOf(val.toLowerCase()) === 0
+          || data.route.indexOf(val) === 0)
+        : new Array<RouteResponseDetail>();
+    }
+
+    return new Array<RouteResponseDetail>();
+  }
+
   getConfigUrl() {
     this.httpClient.get<UrlConfig>("assets/url.json").subscribe((data: UrlConfig) => AppComponent.urlConfig = {...data});
   }
@@ -37,12 +58,10 @@ export class EtaComponent implements OnInit {
 //#region Route
 
   onCompanySelected(company: string) {
-    console.log("onCompanySelected");
     this.getRouteList(company);
   }
 
   getRouteList(company: string) {
-    console.log("getRouteList company:" + company);
     let url : string = '';
     if ("KMB" == company) {
       url = `${AppComponent.urlConfig?.kmb.routeUrl}`;
@@ -116,7 +135,6 @@ export class EtaComponent implements OnInit {
 //#endregion
 
   onSubmit() {
-    console.log("Submitted: " + JSON.stringify(this.model.route));
     if (this.model.route != undefined){
       new EtaContainerComponent(this.httpClient).addContainer(
         { stopId: this.model.stop, 
@@ -132,10 +150,14 @@ export class EtaComponent implements OnInit {
   }  
 
 //#region AutoComplete
-  keyword = 'select_label';
-  selectEvent(item: any) {
-    this.model.route = item;
-    this.onRouteSelected();
+  selectEvent(item?: RouteResponseDetail) {
+    if (item != null) {
+      this.model.route = item;
+      this.onRouteSelected();
+    }    
+  }
+  displayFn(item?: RouteResponseDetail): string {
+    return item ? (item.route + "-" + item.dest_en) : "";
   }
 //#endregion
 

@@ -12,6 +12,21 @@
         </select>
         <br>
         <label for="route">Route</label>
+        <input [formControl]="matCtrl"
+            placeholder="Select Bus Route"
+            aria-label="Text"            
+            matInput
+            class="form-control"
+            [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option 
+                *ngFor="let option of filterRouteList | async " [value]="option"
+                (onSelectionChange)="selectEvent(option)">
+              {{option.route}} - {{option.dest_en}}
+            </mat-option>            
+        </mat-autocomplete>
+        <br>
+        <!-- <label for="route">Route</label>
         <ng-autocomplete [disabled]="!routeList" #auto
         [data]="routeList ? routeList.data : []"
         [searchKeyword]="keyword"
@@ -28,7 +43,7 @@
         <ng-template #notFoundTemplate let-notFound>
         <div [innerHTML]="notFound"></div>
         </ng-template>
-        <br>
+        <br> -->
         <label for="stop">Stop</label>
         <select class="form-control" id="stop"
         required #stop [disabled]="routeStopList != null && routeStopList.data != null && routeStopList.data.length == 0"
