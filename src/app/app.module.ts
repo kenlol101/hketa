@@ -8,9 +8,12 @@ import { HeaderComponent } from './header/header.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EtaContainerComponent } from './eta-container/eta-container.component';
-import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
+import { MatTableModule } from '@angular/material/table'; 
+import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button'
 
 @NgModule({
   declarations: [
@@ -25,9 +28,11 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AutocompleteLibModule,
     BrowserAnimationsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

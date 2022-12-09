@@ -1,9 +1,10 @@
+import { DataSource } from '@angular/cdk/table';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { AppComponent } from '../app.component';
-import { EtaResponse } from '../data/eta.response';
-import { EtaComponent } from '../eta/eta.component';
+import { EtaResponse, EtaResponseDetail } from '../data/eta.response';
 import { ETAContainer as EtaContainer } from './eta-container';
 
 @Component({
@@ -13,12 +14,13 @@ import { ETAContainer as EtaContainer } from './eta-container';
 })
 export class EtaContainerComponent {
 
+  displayedColumns: string[] = ['route', 'dest_en', 'eta', 'rmk_en'];
   static containerList: Array<EtaContainer> = [];
 
   constructor(private httpClient: HttpClient) { }
 
   addContainer(item: EtaContainer): void {    
-    EtaContainerComponent.containerList.push(item);    
+    EtaContainerComponent.containerList.push(item);
     this.refreshContainer(item);
     setInterval(() => {
       this.refreshContainer(item);
@@ -29,7 +31,13 @@ export class EtaContainerComponent {
     EtaContainerComponent.containerList.forEach(element => {
       element.response.data.sort((d1, d2) => d1.seq - d2.seq)
     });
+    console.log('containerList:',EtaContainerComponent.containerList);
     return EtaContainerComponent.containerList;
+  }
+
+  tableData(etaReponse: EtaResponse): DataSource<EtaResponseDetail> {
+    console.log('table data:',etaReponse);
+    return new MatTableDataSource(etaReponse.data);
   }
 
   refreshContainer(item: EtaContainer) {
@@ -59,5 +67,4 @@ getETAResponse(item: EtaContainer, callback: (data: EtaResponse) => void) {
     });
 }
 //#endregion
-
 }

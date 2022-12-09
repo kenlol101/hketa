@@ -15,3 +15,19 @@ table tr th{
     background-color: #E60012;
     color: white;
 }
+
+.mat-table {
+    width: 100%;
+}
+.mat-column-route {
+    width:10%;
+}
+.mat-column-dest_en {
+    width:30%;
+}
+.mat-column-eta {
+    width:30%;
+}
+.mat-column-rmk_en {
+    width:30%;
+}
