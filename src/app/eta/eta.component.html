@@ -8,9 +8,9 @@
             [(ngModel)]="model.company" name="company"
             (selectionChange)='onCompanySelected(company.value)'>
                 <mat-option>None</mat-option>
-                <mat-option value="KMB">KMB</mat-option>
-                <!-- TODO to be implement -->
-                <!-- <mat-option value="NFWS">NFWS</mat-option> -->
+                <mat-option *ngFor="let c of companyList" [value]="c.co">
+                    {{c.name_en}}
+                </mat-option>
             </mat-select>
         </mat-form-field>
         <br>

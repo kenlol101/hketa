@@ -1,6 +1,6 @@
 <div *ngFor="let c of containerList">
     <ng-container *ngIf="c.response">
-        <label>Generated Time: {{c.response.generated_timestamp | date:'medium'}}</label>
+        <label style="color: white">Generated Time: {{c.response.generated_timestamp | date:'medium'}}</label>
         <table mat-table [dataSource]="tableData(c.response)" class="mat-elevation-z8" aria-label="ETA Table">
             <ng-container matColumnDef="route">
                 <th mat-header-cell *matHeaderCellDef> Route </th>

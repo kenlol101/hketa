@@ -49,12 +49,14 @@ export class EtaContainerComponent {
   }
 
 //#region ETA
-private getETAObservable(stopId: string, route: string, serviceType: string): Observable<EtaResponse> {
-  return this.httpClient.get<EtaResponse>(`${AppComponent.config?.kmb.etaUrl}${stopId}/${route}/${serviceType}`);
+private getETAObservable(co: string, stopId: string, route: string, serviceType: string): Observable<EtaResponse> {
+  let url = "KMB" == co ? `${AppComponent.config?.kmb.etaUrl}${stopId}/${route}/${serviceType}` 
+            : `${AppComponent.config?.nwfb.etaUrl}${co}/${stopId}/${route}`;
+  return this.httpClient.get<EtaResponse>(url);
 }
 
 getETAResponse(item: EtaContainer, callback: (data: EtaResponse) => void) {
-  this.getETAObservable(item.stopId, item.route, item.serviceType).subscribe(
+  this.getETAObservable(item.co, item.stopId, item.route, item.serviceType).subscribe(
     (data: EtaResponse) => {
       // this.etaReponse = {...data};
       data.data = data.data.filter(d => d.route == item.route

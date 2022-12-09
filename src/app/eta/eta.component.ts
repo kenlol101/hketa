@@ -11,6 +11,7 @@ import { EtaContainerComponent } from '../eta-container/eta-container.component'
 import { AppComponent } from '../app.component';
 import { ETAContainer } from '../eta-container/eta-container';
 import { FormControl } from '@angular/forms';
+import { Company } from '../data/company';
 
 @Component({
   selector: 'app-eta',
@@ -18,7 +19,12 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./eta.component.css']
 })
 export class EtaComponent implements OnInit {
- 
+  companyList: Company[] = [
+    {co: "CTB", name_en:"Citybus Limited", name_tc:"城巴有限公司", name_sc:"城巴有限公司"},
+    {co: "NWFB", name_en:"New World First Bus Services Limited", name_tc:"新世界第一巴士服務有限公司", name_sc:"新世界第一巴士服务有限公司"},
+    {co: "KMB", name_en:"The Kowloon Motor Bus", name_tc:"九龍巴士有限公司", name_sc:"九龙巴士有限公司"}
+  ]
+
   routeList: RouteResponse | undefined;
   routeStopList: RouteStopResponse | undefined;
   stopList: Array<StopResponse> = [];
@@ -58,7 +64,7 @@ export class EtaComponent implements OnInit {
 //#region Route
 
   onCompanySelected(company: string) {
-    console.log("onCompanySelected", company);
+    // console.log("onCompanySelected", company);
     this.getRouteList(company);
   }
 
@@ -66,15 +72,40 @@ export class EtaComponent implements OnInit {
     let url : string = '';
     if ("KMB" == company) {
       url = `${AppComponent.urlConfig?.kmb.routeUrl}`;
+      this.httpClient.get<RouteResponse>(url).subscribe((data:RouteResponse) => {
+        this.routeList = {...data};
+        this.routeList.data.map(r => r.select_label = r.route + ' - ' + r.dest_en);
+      });
     }
-    else if ("NWFS" == company) {
-      url = `${AppComponent.urlConfig?.nwfs.routeUrl}`;
+    else {
+      url = `${AppComponent.urlConfig?.nwfb.routeUrl}${company}/`;
+      this.httpClient.get<RouteResponse>(url).subscribe((data : RouteResponse) => {
+        let tempData = data.data.map(x => Object.assign({}, x));
+        this.routeList = {...data};
+        this.routeList.data.map(r => r.bound = "O");
+        
+        tempData.map(function(r){
+          let temp_dest_en = r.dest_en;
+          let temp_dest_tc = r.dest_tc;
+          let temp_dest_sc = r.dest_sc;
+
+          r.dest_en = r.orig_en;
+          r.dest_sc = r.orig_sc;
+          r.dest_tc = r.orig_tc;
+
+          r.orig_en = temp_dest_en;
+          r.orig_sc = temp_dest_tc;
+          r.orig_tc = temp_dest_sc;
+
+          r.bound = "I";          
+        });
+
+        this.routeList.data.push(...tempData);
+
+      });
     }
-    console.log("url: " + url);
-    this.httpClient.get<RouteResponse>(url).subscribe((data:RouteResponse) => {
-      this.routeList = {...data};
-      this.routeList.data.map(r => r.select_label = r.route + ' - ' + r.dest_en);
-    });
+    // console.log("url: " + url);
+    
   }
 //#endregion
 
@@ -98,10 +129,11 @@ export class EtaComponent implements OnInit {
   }
 
   getStopList(route: string, bound: string, service_type: string) {
-    console.log("getStopList route:" + route + ",bound: " + bound + ",service_type: " + service_type);
-    let url : string = `${AppComponent.urlConfig?.kmb.routeStopUrl}${route}/${bound}/${service_type}`;
+    // console.log("getStopList route:" + route + ",bound: " + bound + ",service_type: " + service_type);
+    let url : string = "KMB" == this.model.company ? `${AppComponent.urlConfig?.kmb.routeStopUrl}${route}/${bound}/${service_type}` 
+              : `${AppComponent.urlConfig?.nwfb.routeStopUrl}${this.model.company}/${route}/${bound}`;
     
-    console.log("url: " + url);
+    // console.log("url: " + url);
 
     let routeStopObserver: Observer<RouteStopResponse> = {
       next: (data: RouteStopResponse) => this.routeStopList = {...data},
@@ -113,7 +145,8 @@ export class EtaComponent implements OnInit {
 
           for (var i = 0; i < this.routeStopList.data.length; i++) {
             var d : RouteStopResponseDetail = this.routeStopList.data[i];
-            let stopUrl = `${AppComponent.urlConfig?.kmb.stopUrl}${d.stop}`;
+            let stopUrl = "KMB" == this.model.company ? `${AppComponent.urlConfig?.kmb.stopUrl}${d.stop}` 
+                          : `${AppComponent.urlConfig?.nwfb.stopUrl}${d.stop}`  ;
             // this.httpClient.get<StopResponse>(stopUrl).subscribe((data: StopResponse) => this.stopList?.push({...data}));
 
             this.httpClient.get<StopResponse>(stopUrl)
@@ -136,10 +169,10 @@ export class EtaComponent implements OnInit {
 //#endregion
 
   onSubmit() {
-    console.log("submit: " , this.model);
     if (this.model.route != undefined){
       new EtaContainerComponent(this.httpClient).addContainer(
-        { stopId: this.model.stop, 
+        { co: this.model.company,
+          stopId: this.model.stop, 
           route: this.model.route.route,
           serviceType: this.model.route.service_type,
           bound: this.model.route.bound} as ETAContainer

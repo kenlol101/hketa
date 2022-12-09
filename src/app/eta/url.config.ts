@@ -1,6 +1,6 @@
 export interface UrlConfig {
     kmb: UrlConfigDetail;
-    nwfs: UrlConfigDetail;
+    nwfb: UrlConfigDetail;
 }
 
 export interface UrlConfigDetail {
