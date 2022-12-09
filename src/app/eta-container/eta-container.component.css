@@ -13,7 +13,7 @@ button {
 
 table tr th{
     background-color: #E60012;
-    color: white;
+    /* color: white; */
 }
 
 .mat-table {

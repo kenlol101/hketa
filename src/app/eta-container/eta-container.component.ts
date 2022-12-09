@@ -31,12 +31,10 @@ export class EtaContainerComponent {
     EtaContainerComponent.containerList.forEach(element => {
       element.response.data.sort((d1, d2) => d1.seq - d2.seq)
     });
-    console.log('containerList:',EtaContainerComponent.containerList);
     return EtaContainerComponent.containerList;
   }
 
   tableData(etaReponse: EtaResponse): DataSource<EtaResponseDetail> {
-    console.log('table data:',etaReponse);
     return new MatTableDataSource(etaReponse.data);
   }
 

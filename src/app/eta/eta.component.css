@@ -1,3 +1,11 @@
 :host(app-eta) { 
     width:95%
  }
+
+ input {
+     color: white;
+ }
+
+ mat-form-field{
+     width: 100%;
+ }

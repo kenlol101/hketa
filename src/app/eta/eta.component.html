@@ -1,55 +1,46 @@
 <form (ngSubmit)="onSubmit()" #etaForm="ngForm">
     <!-- {{debug}} -->
     <div class="form-group">
-        <label for="company">Company</label>
-        <select class="form-control" id="company"
-        required #company
-        [(ngModel)]="model.company" name="company"
-        (change)='onCompanySelected(company.value)'>
-            <option>KMB</option>
-            <!-- TODO to be implement -->
-            <!-- <option>NFWS</option> -->
-        </select>
+        <mat-form-field appearance="fill">
+            <mat-label for="company">Company</mat-label>
+            <mat-select id="company"
+            required #company
+            [(ngModel)]="model.company" name="company"
+            (selectionChange)='onCompanySelected(company.value)'>
+                <mat-option>None</mat-option>
+                <mat-option value="KMB">KMB</mat-option>
+                <!-- TODO to be implement -->
+                <!-- <mat-option value="NFWS">NFWS</mat-option> -->
+            </mat-select>
+        </mat-form-field>
         <br>
-        <label for="route">Route</label>
-        <input [formControl]="matCtrl"
-            placeholder="Select Bus Route"
-            aria-label="Text"            
-            matInput
-            class="form-control"
-            [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option 
-                *ngFor="let option of filterRouteList | async " [value]="option"
-                (onSelectionChange)="selectEvent(option)">
-              {{option.route}} - {{option.dest_en}}
-            </mat-option>            
-        </mat-autocomplete>
+        <mat-form-field appearance="fill">
+            <mat-label for="route">Route</mat-label>
+            <input [formControl]="matCtrl" required
+                placeholder="Select Bus Route"
+                aria-label="Bus Route"            
+                matInput id="route" name="route"
+                [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                <mat-option 
+                    *ngFor="let option of filterRouteList | async " [value]="option"
+                    (onSelectionChange)="selectEvent(option)">
+                {{option.route}} - {{option.dest_en}}
+                </mat-option>            
+            </mat-autocomplete>
+        </mat-form-field>
         <br>
-        <!-- <label for="route">Route</label>
-        <ng-autocomplete [disabled]="!routeList" #auto
-        [data]="routeList ? routeList.data : []"
-        [searchKeyword]="keyword"
-        placeholder="Select Bus Route"        
-        (selected)='selectEvent($event)'  
-        [itemTemplate]="itemTemplate"
-        [notFoundTemplate]="notFoundTemplate">                                 
-        </ng-autocomplete>
 
-        <ng-template #itemTemplate let-item>
-        <a [innerHTML]="item.route + ' - ' + item.dest_en"></a>
-        </ng-template>
-
-        <ng-template #notFoundTemplate let-notFound>
-        <div [innerHTML]="notFound"></div>
-        </ng-template>
-        <br> -->
-        <label for="stop">Stop</label>
-        <select class="form-control" id="stop"
-        required #stop [disabled]="routeStopList != null && routeStopList.data != null && routeStopList.data.length == 0"
-        [(ngModel)]="model.stop" name="stop">
-            <option *ngFor="let s of routeStopList?.data" [value]="s.stop">{{s.seq}} - {{s.stopName}}</option>
-        </select>      
+        <mat-form-field appearance="fill">
+            <mat-label for="stop">Stop</mat-label>
+            <mat-select required #stop id="stop" name="stop"
+                        [(ngModel)]="model.stop" 
+                        [disabled]="routeStopList != null && routeStopList.data != null && routeStopList.data.length == 0">
+                <mat-option *ngFor="let s of routeStopList?.data" [value]="s.stop">
+                    {{s.seq}} - {{s.stopName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
     <br>
     <button type="submit" class="btn btn-success" [disabled]="!etaForm.form.valid">Add</button>

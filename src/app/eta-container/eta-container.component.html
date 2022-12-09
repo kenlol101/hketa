@@ -1,4 +1,4 @@
-<div class="form-control" *ngFor="let c of containerList">
+<div *ngFor="let c of containerList">
     <ng-container *ngIf="c.response">
         <label>Generated Time: {{c.response.generated_timestamp | date:'medium'}}</label>
         <table mat-table [dataSource]="tableData(c.response)" class="mat-elevation-z8" aria-label="ETA Table">

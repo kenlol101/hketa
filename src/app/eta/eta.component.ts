@@ -58,6 +58,7 @@ export class EtaComponent implements OnInit {
 //#region Route
 
   onCompanySelected(company: string) {
+    console.log("onCompanySelected", company);
     this.getRouteList(company);
   }
 
@@ -135,6 +136,7 @@ export class EtaComponent implements OnInit {
 //#endregion
 
   onSubmit() {
+    console.log("submit: " , this.model);
     if (this.model.route != undefined){
       new EtaContainerComponent(this.httpClient).addContainer(
         { stopId: this.model.stop, 
@@ -157,7 +159,7 @@ export class EtaComponent implements OnInit {
     }    
   }
   displayFn(item?: RouteResponseDetail): string {
-    return item ? (item.route + "-" + item.dest_en) : "";
+    return item ? (item.route + " - " + item.dest_en) : "";
   }
 //#endregion
 
